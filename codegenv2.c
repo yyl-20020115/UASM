@@ -847,7 +847,7 @@ void BuildEVEX(bool* needEvex, unsigned char* evexBytes, struct Instr_Def* instr
 
 	 BYTE1:
 	 | 7 | 6 | 5 | 4  | 3 | 2 | 1-0 |
-	 | R | X | B | R’ | 0 | 0 |  m  |
+	 | R | X | B | R?| 0 | 0 |  m  |
 
 	BYTE2:
 	 | 7 | 6-3      | 2 | 1-0 |

@@ -1431,14 +1431,15 @@ int Tokenize( char *line, unsigned int start, struct asm_tok tokenarray[], unsig
             break;
         }
         //NOTICE: by yilin
-        //NOTICE: we need to filter out following reserved words: rav, large
+        //NOTICE: we need to filter out following reserved words: large
+        //NOTICE: rva is treated as offset
         if (rc == NOT_ERROR) 
         {
             if (0 == strcasecmp(tokenarray[p.index].string_ptr, "rva")) {
                 tokenarray[p.index].string_ptr = "offset";
                 tokenarray[p.index].token = T_UNARY_OPERATOR;
                 tokenarray[p.index].dirtype = DRT_CATSTR;
-                tokenarray[p.index].tokval = 249;
+                tokenarray[p.index].tokval = T_OFFSET;
             }
             if (0 == strcasecmp(tokenarray[p.index].string_ptr, "large"))
                 continue;
