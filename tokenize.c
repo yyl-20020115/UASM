@@ -1222,7 +1222,7 @@ int Tokenize( char *line, unsigned int start, struct asm_tok tokenarray[], unsig
 {
     int                rc;
     struct line_status p;
-	  char*  input1 = NULL;
+	char*  input1 = NULL;
     char*  p1 = NULL;
     int    cnt = 0;
     p.input = line;
@@ -1429,6 +1429,19 @@ int Tokenize( char *line, unsigned int start, struct asm_tok tokenarray[], unsig
         if ( rc == ERROR ) {
             p.index = start; /* skip this line */
             break;
+        }
+        //NOTICE: by yilin
+        //NOTICE: we need to filter out following reserved words: rav, large
+        if (rc == NOT_ERROR) 
+        {
+            if (0 == strcasecmp(tokenarray[p.index].string_ptr, "rva")) {
+                tokenarray[p.index].string_ptr = "offset";
+                tokenarray[p.index].token = T_UNARY_OPERATOR;
+                tokenarray[p.index].dirtype = DRT_CATSTR;
+                tokenarray[p.index].tokval = 249;
+            }
+            if (0 == strcasecmp(tokenarray[p.index].string_ptr, "large"))
+                continue;
         }
         /* v2.04: this has been moved here from condasm.c to
          * avoid problems with (conditional) listings. It also

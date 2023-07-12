@@ -4036,7 +4036,8 @@ static ret_code evaluate( struct expr *opnd1, int *i, struct asm_tok tokenarray[
 	struct asym *labelsym2;
 	struct asm_tok tok;
     struct dsym *recordsym;
-    
+skip:
+
     DebugMsg1(("%u evaluate(i=%d, end=%d, flags=%X) enter [opnd1: kind=%d type=%s]\n",
                ++evallvl, *i, end, flags, opnd1->kind, opnd1->type ? opnd1->type->name : "NULL" ));
 
@@ -4123,13 +4124,18 @@ static ret_code evaluate( struct expr *opnd1, int *i, struct asm_tok tokenarray[
             /* check operator behind operand. Must be binary or open bracket */
             if ( tokenarray[curr_operator].token == '+' || tokenarray[curr_operator].token == '-' )
                 tokenarray[curr_operator].specval = BINARY_PLUSMINUS;
+
             else if( !is_operator( tokenarray[curr_operator].token ) || tokenarray[curr_operator].token == T_UNARY_OPERATOR ) {
                 DebugMsg(("%u evaluate: unexpected token at idx=%u, token=%X >%s<\n", evallvl, curr_operator, tokenarray[curr_operator].token, tokenarray[curr_operator].tokpos ));
                 rc = ERROR;
                 //if ( !opnd2.is_opattr )  /* v2.11: opnd2 was accessed before initialization */
                 if (!opnd1->is_opattr)
 				{
-					if (opnd1->type != NULL)
+                    if (opnd1->type == NULL) 
+                    {
+                        OperErr(curr_operator, tokenarray);
+                    }
+					else //if (opnd1->type != NULL)
 					{
 						recordsym = SymSearch(opnd1->type->name);
 						/* if it is a RECORD don't throw an error but decorate it with an actual value v2.41*/
@@ -4142,8 +4148,7 @@ static ret_code evaluate( struct expr *opnd1, int *i, struct asm_tok tokenarray[
 						else
 							OperErr(curr_operator, tokenarray);
 					}
-					else
-						OperErr(curr_operator, tokenarray);
+					
                 }
                 break;
             }
